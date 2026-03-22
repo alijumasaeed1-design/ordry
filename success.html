@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Success</title>
+</head>
+<body style="background:black;color:white;text-align:center;font-family:sans-serif;padding-top:100px">
+  <h1>✅ Subscription Successful</h1>
+  <p>Welcome to ORDRY</p>
+  <button onclick="goDashboard()" style="padding:14px 22px;border:none;border-radius:10px;font-weight:bold;cursor:pointer;">Go to Dashboard</button>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("ordryUser"));
+    if (user) {
+      user.subscribed = true;
+      localStorage.setItem("ordryUser", JSON.stringify(user));
+    }
+
+    function goDashboard() {
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>

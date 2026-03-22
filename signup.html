@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ORDRY Signup</title>
+  <style>
+    body{margin:0;background:#000;color:#fff;font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh}
+    .box{background:#111;padding:30px;border-radius:16px;width:320px;border:1px solid #222}
+    h1{text-align:center;margin-top:0}
+    input{width:100%;padding:14px;margin:10px 0;border:none;border-radius:10px}
+    button{width:100%;padding:14px;background:#fff;color:#000;border:none;border-radius:10px;font-weight:bold;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Create Account</h1>
+    <input type="text" id="name" placeholder="Store Name" />
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="signup()">Create</button>
+  </div>
+
+  <script>
+    function signup() {
+      const user = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
+        subscribed: false
+      };
+
+      localStorage.setItem("ordryUser", JSON.stringify(user));
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ORDRY Dashboard</title>
+  <style>
+    body{margin:0;background:#000;color:#fff;font-family:Arial,sans-serif}
+    .layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+    .sidebar{background:#0d0d0d;border-right:1px solid #222;padding:24px}
+    .sidebar h2{margin-top:0}
+    .nav-btn{display:block;width:100%;margin:10px 0;padding:12px;border:none;border-radius:10px;background:#161616;color:#fff;cursor:pointer;text-align:left}
+    .main{padding:30px}
+    .card{background:#111;border:1px solid #222;border-radius:16px;padding:20px;margin-bottom:20px}
+    input, select{width:100%;padding:12px;margin:8px 0;border:none;border-radius:10px}
+    button.action{padding:12px 18px;background:#fff;color:#000;border:none;border-radius:10px;font-weight:bold;cursor:pointer}
+    .hidden{display:none}
+    .product{background:#1a1a1a;border-radius:12px;padding:14px;margin-top:12px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .small-btn{padding:10px 14px;border:none;border-radius:10px;cursor:pointer}
+    a{color:#fff}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <h2>ORDRY</h2>
+      <button class="nav-btn" onclick="showSection('overview')">Overview</button>
+      <button class="nav-btn" onclick="showSection('products')">Products</button>
+      <button class="nav-btn" onclick="showSection('orders')">Orders</button>
+      <button class="nav-btn" onclick="showSection('store')">Store Link</button>
+      <button class="nav-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="main">
+      <div id="overviewSection">
+        <div class="card">
+          <h1 id="storeTitle">Dashboard</h1>
+          <p id="planStatus">Plan: Free</p>
+          <p id="productCount">Products: 0</p>
+          <p id="orderCount">Orders: 0</p>
+        </div>
+      </div>
+
+      <div id="productsSection" class="hidden">
+        <div class="card">
+          <h2>Add Product</h2>
+          <input type="text" id="productName" placeholder="Product Name" />
+          <input type="number" id="productPrice" placeholder="Price AED" />
+          <input type="text" id="productImage" placeholder="Image URL (optional)" />
+          <button class="action" onclick="addProduct()">Add Product</button>
+        </div>
+
+        <div class="card">
+          <h2>My Products</h2>
+          <div id="productsList"></div>
+        </div>
+      </div>
+
+      <div id="ordersSection" class="hidden">
+        <div class="card">
+          <h2>Orders</h2>
+          <div id="ordersList"></div>
+        </div>
+      </div>
+
+      <div id="storeSection" class="hidden">
+        <div class="card">
+          <h2>Your Store</h2>
+          <p>Open this link to view your store page:</p>
+          <a href="store.html" target="_blank">Open Store</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("ordryUser"));
+
+    if (!user) {
+      window.location.href = "login.html";
+    }
+
+    if (!user.products) user.products = [];
+    if (!user.orders) user.orders = [];
+
+    saveUser();
+
+    function saveUser() {
+      localStorage.setItem("ordryUser", JSON.stringify(user));
+    }
+
+    function refreshDashboard() {
+      document.getElementById("storeTitle").innerText = user.name || "My Store";
+      document.getElementById("planStatus").innerText = user.subscribed ? "Plan: Active Subscription ✅" : "Plan: Free";
+      document.getElementById("productCount").innerText = "Products: " + user.products.length;
+      document.getElementById("orderCount").innerText = "Orders: " + user.orders.length;
+
+      const productsList = document.getElementById("productsList");
+      productsList.innerHTML = "";
+
+      if (user.products.length === 0) {
+        productsList.innerHTML = "<p>No products yet.</p>";
+      } else {
+        user.products.forEach((product, index) => {
+          productsList.innerHTML += `
+            <div class="product">
+              <strong>${product.name}</strong><br>
+              ${product.price} AED
+              <div class="row" style="margin-top:10px;">
+                <button class="small-btn" onclick="deleteProduct(${index})">Delete</button>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      const ordersList = document.getElementById("ordersList");
+      ordersList.innerHTML = "";
+
+      if (user.orders.length === 0) {
+        ordersList.innerHTML = "<p>No orders yet.</p>";
+      } else {
+        user.orders.forEach((order, index) => {
+          ordersList.innerHTML += `
+            <div class="product">
+              <strong>${order.productName}</strong><br>
+              Customer: ${order.customerName}<br>
+              Phone: ${order.phone}<br>
+              Status: ${order.status}
+              <div class="row" style="margin-top:10px;">
+                <button class="small-btn" onclick="markDelivered(${index})">Mark Delivered</button>
+              </div>
+            </div>
+          `;
+        });
+      }
+    }
+
+    function addProduct() {
+      const name = document.getElementById("productName").value;
+      const price = document.getElementById("productPrice").value;
+      const image = document.getElementById("productImage").value;
+
+      if (!name || !price) {
+        alert("Enter product name and price");
+        return;
+      }
+
+      user.products.push({
+        name,
+        price,
+        image
+      });
+
+      saveUser();
+      refreshDashboard();
+
+      document.getElementById("productName").value = "";
+      document.getElementById("productPrice").value = "";
+      document.getElementById("productImage").value = "";
+    }
+
+    function deleteProduct(index) {
+      user.products.splice(index, 1);
+      saveUser();
+      refreshDashboard();
+    }
+
+    function markDelivered(index) {
+      user.orders[index].status = "Delivered";
+      saveUser();
+      refreshDashboard();
+    }
+
+    function showSection(section) {
+      document.getElementById("overviewSection").classList.add("hidden");
+      document.getElementById("productsSection").classList.add("hidden");
+      document.getElementById("ordersSection").classList.add("hidden");
+      document.getElementById("storeSection").classList.add("hidden");
+
+      if (section === "overview") document.getElementById("overviewSection").classList.remove("hidden");
+      if (section === "products") document.getElementById("productsSection").classList.remove("hidden");
+      if (section === "orders") document.getElementById("ordersSection").classList.remove("hidden");
+      if (section === "store") document.getElementById("storeSection").classList.remove("hidden");
+    }
+
+    function logout() {
+      window.location.href = "login.html";
+    }
+
+    refreshDashboard();
+  </script>
+</body>
+</html>

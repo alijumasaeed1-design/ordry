@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ORDRY Login</title>
+  <style>
+    body{margin:0;background:#000;color:#fff;font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh}
+    .box{background:#111;padding:30px;border-radius:16px;width:320px;border:1px solid #222}
+    h1{text-align:center;margin-top:0}
+    input{width:100%;padding:14px;margin:10px 0;border:none;border-radius:10px}
+    button{width:100%;padding:14px;background:#fff;color:#000;border:none;border-radius:10px;font-weight:bold;cursor:pointer}
+    p{text-align:center;color:#aaa}
+    a{color:#fff}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>ORDRY</h1>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <p>No account? <a href="signup.html">Create one</a></p>
+  </div>
+
+  <script>
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const savedUser = JSON.parse(localStorage.getItem("ordryUser"));
+
+      if (savedUser && savedUser.email === email && savedUser.password === password) {
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Invalid login");
+      }
+    }
+  </script>
+</body>
+</html>
