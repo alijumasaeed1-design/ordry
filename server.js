@@ -4,7 +4,7 @@ const app = express();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 app.use(express.json());
-app.use(express.static(__dirname));
+app.use(express.static("public"));
 
 app.post("/create-checkout-session", async (req, res) => {
   try {
@@ -40,10 +40,6 @@ app.post("/create-checkout-session", async (req, res) => {
     console.log(err);
     res.status(500).send("Stripe error");
   }
-});
-
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
 });
 
 const PORT = process.env.PORT || 3000;
